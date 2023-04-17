@@ -7,11 +7,11 @@ const db = require('./db/db.js');
 
 const app = express();
 
-const router = require('./router'); 
+// const router = require('./router'); 
 
 app.use(cors());
 app.use(express.json());
-app.use(router);
+// app.use(router);
 
 const PORT = 3000;
 

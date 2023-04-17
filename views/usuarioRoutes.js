@@ -8,6 +8,7 @@ const isDoctor = require('../middleware/isDoctor');
 const verifyUserChanges = require('../middleware/verifyUserChanges');
 const verifyToken = require('../middleware/verifyToken');
 const isAdmin = require('../middleware/isAdmin'); */
+const isUsuario = require('../middlewares/isUsuario');
 
 //Endpoints CRUD
 //GET

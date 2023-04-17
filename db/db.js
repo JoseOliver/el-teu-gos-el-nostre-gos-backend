@@ -34,9 +34,20 @@ switch(process.env.ENVIRONMENT){
         console.log('defined environment ' + process.env.ENVIRONMENT + ' is not a correct value, redefine it before starting');
         process.exit(1);
 }
+//Sync database
+sequelize.sync({ force: true })
+.then(()=>{
+    console.log("All models were synchronized successfully.");
+});
 
 module.exports = sequelize.authenticate()
 .then((db)=>{
     console.log('Connection has been established successfully.'); 
-    return db;
+    try {
+        sequelize.sync({ force: true });
+    } catch (error) {
+        console.error(error);
+    } finally {
+        return db;
+    }
 });
