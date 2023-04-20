@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     class Perro extends Model {
         static associate(models) {
             Perro.belongsTo(
-                models.Dueño
+                models.Usuario
             )
             Perro.hasMany(
                 models.Estancia, {

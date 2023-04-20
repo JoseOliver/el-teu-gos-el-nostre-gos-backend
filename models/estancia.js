@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
                 models.Perro
             ),
             Estancia.belongsTo(
-                models.Cuidador
+                models.Usuario
             )
         }
     }

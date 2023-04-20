@@ -35,19 +35,13 @@ switch(process.env.ENVIRONMENT){
         process.exit(1);
 }
 //Sync database
-sequelize.sync({ force: true })
-.then(()=>{
-    console.log("All models were synchronized successfully.");
-});
+// sequelize.sync({ force: true })
+// .then(()=>{
+//     console.log("All models were synchronized successfully.");
+// });
 
 module.exports = sequelize.authenticate()
 .then((db)=>{
     console.log('Connection has been established successfully.'); 
-    try {
-        sequelize.sync({ force: true });
-    } catch (error) {
-        console.error(error);
-    } finally {
-        return db;
-    }
+    return db;
 });
