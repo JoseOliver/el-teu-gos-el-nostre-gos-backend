@@ -14,12 +14,12 @@ module.exports = (sequelize, DataTypes) => {
     }
     Estancia.init({
         id: { type: DataTypes.UUID, validate: { isUUID: 4 }, defaultValue: DataTypes.UUIDV4, primaryKey: true }, // Or DataTypes.UUIDV1
-        inicio: { type: DataTypes.DATEONLY , allowNull: false },
-        fin: { type: DataTypes.DATEONLY , allowNull: false },
+        inicio: { type: DataTypes.DATE , allowNull: false },
+        fin: { type: DataTypes.DATE , allowNull: false },
         verificada: { type: DataTypes.BOOLEAN, defaultValue: false },
         finalizada: { type: DataTypes.BOOLEAN, defaultValue: false },
-        perro_id: { type: DataTypes.INTEGER, validate: { isInt: true }},
-        cuidador_id: { type: DataTypes.INTEGER, validate: { isInt: true }}
+        perro_id: { type: DataTypes.UUID, validate: { isUUID: 4 }, allowNull: false, notEmpty: true },
+        cuidador_id: { type: DataTypes.UUID, validate: { isUUID: 4 }, allowNull: false, notEmpty: true }
     }, {
         sequelize,
         modelName: 'Estancia',

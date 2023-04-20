@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         anotaciones: { type: DataTypes.TEXT },
         revisado: { type: DataTypes.BOOLEAN, defaultValue: false },
         precio_dia: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 15.0, validate: { isNumeric: true }},
-        dueño_id: { type: DataTypes.INTEGER, validate: { isInt: true }}
+        dueño_id: { type: DataTypes.UUID, validate: { isUUID: 4 }, allowNull: false, notEmpty: true }
     }, {
         sequelize,
         modelName: 'Perro',

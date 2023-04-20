@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
         texto: { type: DataTypes.TEXT , allowNull: false, validate: { len: [2, 40] }},
         descripcion: { type: DataTypes.STRING(150), allowNull: false, validate: { len: [2, 150] }},
         enlace_album: { type: DataTypes.STRING(150), allowNull: false, validate: { len: [3, 150] }},
-        autor_id: { type: DataTypes.INTEGER, validate: { isInt: true }}
+        autor_id: { type: DataTypes.UUID, validate: { isUUID: 4 }, allowNull: false, notEmpty: true }
     }, {
         sequelize,
         modelName: 'Entrada',
