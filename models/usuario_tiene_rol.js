@@ -13,9 +13,11 @@ module.exports = (sequelize, DataTypes) => {
         }
     }
     U_Tiene_R.init({
-        id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, validate: { isUUID: 4 }, primaryKey: true },
+        id: { type: DataTypes.INTEGER, validate: { isInt: true }, autoIncrement: true, primaryKey: true },
         rol_id: { type: DataTypes.UUID, validate: { isUUID: 4 }, allowNull: false, notEmpty: true },
-        usuario_id: { type: DataTypes.UUID, validate: { isUUID: 4 }, allowNull: false, notEmpty: true }
+        usuario_id: { type: DataTypes.UUID, validate: { isUUID: 4 }, allowNull: false, notEmpty: true },
+        createdAt: { allowNull: false, type: DataTypes.DATE },
+        updatedAt: { allowNull: false, type: DataTypes.DATE }
     }, {
         sequelize,
         modelName: 'U_Tiene_R',

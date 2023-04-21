@@ -12,8 +12,10 @@ module.exports = (sequelize, DataTypes) => {
         }
     }
     Rol.init({
-        id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, validate: { isUUID: 4 }, primaryKey: true },
-        rol: { type: DataTypes.STRING(20), validate: { len: [3, 20] }, allowNull: false }
+        id: { type: DataTypes.INTEGER, validate: { isInt: true }, autoIncrement: true, primaryKey: true },
+        rol: { type: DataTypes.STRING(20), validate: { len: [3, 20] }, allowNull: false },
+        createdAt: { allowNull: false, type: DataTypes.DATE },
+        updatedAt: { allowNull: false, type: DataTypes.DATE }
     }, {
         sequelize,
         modelName: 'Rol',

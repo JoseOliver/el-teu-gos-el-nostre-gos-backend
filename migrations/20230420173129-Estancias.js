@@ -4,19 +4,21 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.createTable('Estancias', {
-      id: { type: Sequelize.UUID, validate: { isUUID: 4 }, defaultValue: Sequelize.UUIDV4, primaryKey: true }, // Or Sequelize.UUIDV1
+      id: { type: Sequelize.INTEGER, validate: { isInt: true }, autoIncrement: true, primaryKey: true }, // Or Sequelize.UUIDV1
       inicio: { type: Sequelize.DATE , allowNull: false },
       fin: { type: Sequelize.DATE , allowNull: false },
       verificada: { type: Sequelize.BOOLEAN, defaultValue: false },
       finalizada: { type: Sequelize.BOOLEAN, defaultValue: false },
+      createdAt: { allowNull: false, type: Sequelize.DATE },
+      updatedAt: { allowNull: false, type: Sequelize.DATE },
       perro_id: { references: {
         model: "Perros",
         key:"id"
-      },type: Sequelize.UUID, validate: { isUUID: 4 }},
+      },type: Sequelize.INTEGER, validate: { isInt: true }},
       cuidador_id: { references: {
         model: "Usuarios",
         key:"id"
-      },type: Sequelize.UUID, validate: { isUUID: 4 }}
+      },type: Sequelize.INTEGER, validate: { isInt: true }}
     });
   },
 

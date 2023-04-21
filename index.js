@@ -7,16 +7,16 @@ const db = require('./db/db.js');
 
 const app = express();
 
-// const router = require('./router'); 
+const router = require('./router'); 
 
 app.use(cors());
 app.use(express.json());
-// app.use(router);
+app.use(router);
 
 const PORT = 3000;
 
 db.then(() => {
     //Starting server
-    app.listen(PORT, () => console.log("Server running on port " + PORT));
+    app.listen(PORT, () => console.log("Server listening on port " + PORT));
 })
 .catch((err) => console.log(err.message));  

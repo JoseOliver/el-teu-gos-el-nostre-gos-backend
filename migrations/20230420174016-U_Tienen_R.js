@@ -4,15 +4,17 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.createTable('U_Tienen_R', {
-      id: { type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4, validate: { isUUID: 4 }, primaryKey: true },
+      id: { type: Sequelize.INTEGER, validate: { isInt: true }, autoIncrement: true, primaryKey: true },
+      createdAt: { allowNull: false, type: Sequelize.DATE },
+      updatedAt: { allowNull: false, type: Sequelize.DATE },
       rol_id: { references: {
         model: "Roles",
         key:"id"
-      }, type: Sequelize.UUID, validate: { isUUID: 4 }},
+      }, type: Sequelize.INTEGER, validate: { isInt: true }},
       usuario_id: { references: {
         model: "Usuarios",
         key:"id"
-      }, type: Sequelize.UUID, validate: { isUUID: 4 }}
+      }, type: Sequelize.INTEGER, validate: { isInt: true }}
     });
   },
 
