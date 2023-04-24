@@ -3,16 +3,14 @@ const usuarioController = require('../controllers/usuarioController');
 const router = require('express').Router();
 //Import dependencies
 
-/* const userController = require ('../controllers/userController');
-const isDoctor = require('../middleware/isDoctor');
-const verifyUserChanges = require('../middleware/verifyUserChanges');
-const verifyToken = require('../middleware/verifyToken');
-const isAdmin = require('../middleware/isAdmin'); */
 const isUsuario = require('../middlewares/isUsuario');
+const isAdmin = require('../middlewares/isAdmin');
 
 //Endpoints CRUD
 //GET
 router.get("/yo", isUsuario, usuarioController.getMe);
+router.get("/yo/privilegios", isUsuario, usuarioController.getPrivileges);
+router.get("/todos", isUsuario, isAdmin, usuarioController.getAllAsAdmin);
 //CREATE
 //UPDATE
 //DELETE

@@ -13,6 +13,7 @@ switch(process.env.ENVIRONMENT){
                 port: process.env.DEV_MYSQL_PORT,
                 dialect: 'mysql',
                 operatorAliases: false,
+                timezone: '+02:00',
                 pool: {
                     max: 5,  //maximum number of connection in pool
                     min: 0,  //minimum number of connection in pool

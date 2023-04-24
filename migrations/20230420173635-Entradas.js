@@ -4,7 +4,7 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.createTable('Entradas', {
-      id: { type: Sequelize.INTEGER, validate: { isInt: true }, autoIncrement: true, primaryKey: true }, // Or Sequelize.UUIDV1
+      id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
       texto: { type: Sequelize.TEXT , allowNull: false, validate: { len: [2, 40] }},
       descripcion: { type: Sequelize.STRING(150), allowNull: false, validate: { len: [2, 150] }},
       enlace_album: { type: Sequelize.STRING(150), allowNull: true, validate: { len: [3, 150] }},

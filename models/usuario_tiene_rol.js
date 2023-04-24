@@ -2,25 +2,29 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class U_Tiene_R extends Model {
+    class Tiene extends Model {
         static associate(models) {
-            U_Tiene_R.belongsTo(
-                models.Usuario
+            Tiene.belongsTo(
+                models.Usuario, {
+                    foreignKey: { name: 'usuario_id' }
+                }
             )
-            U_Tiene_R.belongsTo(
-                models.Rol
+            Tiene.belongsTo(
+                models.Rol, {
+                    foreignKey: { name: 'rol_id' }
+                }
             )
         }
     }
-    U_Tiene_R.init({
-        id: { type: DataTypes.INTEGER, validate: { isInt: true }, autoIncrement: true, primaryKey: true },
-        rol_id: { type: DataTypes.UUID, validate: { isUUID: 4 }, allowNull: false, notEmpty: true },
-        usuario_id: { type: DataTypes.UUID, validate: { isUUID: 4 }, allowNull: false, notEmpty: true },
+    Tiene.init({
+        id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+        rol_id: { type: DataTypes.INTEGER, allowNull: false, notEmpty: true },
+        usuario_id: { type: DataTypes.INTEGER, allowNull: false, notEmpty: true },
         createdAt: { allowNull: false, type: DataTypes.DATE },
         updatedAt: { allowNull: false, type: DataTypes.DATE }
     }, {
         sequelize,
-        modelName: 'U_Tiene_R',
+        modelName: 'Tiene',
     });
-    return U_Tiene_R;
+    return Tiene;
 };
