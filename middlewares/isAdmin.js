@@ -34,7 +34,8 @@ const isAdmin = async(req, res, next) => {
             }
         }
         let admin = rolesUsuario.find( (rol)=> rol='admin' );
-        if(!admin) return res.status(403).send('You are not admin. you are not allowed.');
+        console.log(admin)
+        if(!admin || admin !== 'admin') return res.status(403).send('You are not admin. you are not allowed.');
         next();
     }catch(error){
         return res.status(500).send(error.message);
