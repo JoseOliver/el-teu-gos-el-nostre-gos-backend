@@ -1,6 +1,8 @@
 const { Usuario, Tiene, Rol } = require("../models");
 const usuarioController = {};
 
+//CRUD
+//get
 usuarioController.getMe = async (req, res) => {
     try {
         const user = await Usuario.findByPk(req.userId,{
@@ -73,14 +75,53 @@ usuarioController.getPrivileges = async (req, res) => {
     }
 };
 usuarioController.getAllAsAdmin= async (req, res) => {
-    let usuarios= await Usuario.findAll({ attributes:{ exclude:[ 'id', 'contraseña' ]}});
-    return res.json(
-        {
-            success: true,
-            message: "All users succesfully retrieved",
-            data: usuarios
+    try {
+        let usuarios= await Usuario.findAll({ attributes:{ exclude:[ 'id', 'contraseña' ]}});
+        return res.json(
+            {
+                success: true,
+                message: "All users succesfully retrieved",
+                data: usuarios
+            }
+        );
+    } catch (error) {
+        return res.status(500).json(
+            {
+                success: false,
+                message: "Something went wrong retrieving users",
+                error: error.message
+            }
+        );
+    }
+}
+//update
+usuarioController.updateMe = async (req, res) => {
+    try {
+        const changes= req.body.changes;
+        req.User.update(changes);
+        req.User.save();
+        let sentUser = {
+            'nombre': req.User.nombre,
+            'apellido': req.User.apellido,
+            'telefono': req.User.telefono,
+            'email': req.User.email
         }
-    );
+        return res.json(
+            {
+                success: true,
+                message: "User succesfully updated",
+                data: sentUser
+            }
+        );
+    } catch (error) {
+        return res.status(500).json(
+            {
+                success: false,
+                message: "Something went wrong updating your user",
+                error: error.message
+            }
+        );
+    }
 }
 
 module.exports = usuarioController;
