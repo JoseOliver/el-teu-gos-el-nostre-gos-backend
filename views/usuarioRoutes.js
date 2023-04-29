@@ -9,9 +9,11 @@ const verifyUserChanges = require('../middlewares/verifyUserChanges');
 router.get("/yo", isUsuario, usuarioController.getMe);
 router.get("/yo/privilegios", isUsuario, usuarioController.getPrivileges);
 router.get("/todos", isUsuario, isAdmin, usuarioController.getAllAsAdmin);
+router.get("/:id", isUsuario, isAdmin, usuarioController.getUser);
 //CREATE
 //UPDATE
 router.post("/yo", isUsuario, verifyUserChanges, usuarioController.updateMe);
+router.post("/privilegiosup", isAdmin, usuarioController.putPrivilege);
 //DELETE
 
 /* router.get("/", verifyToken, isDoctor, userController.getAllUsersAsDoctor);

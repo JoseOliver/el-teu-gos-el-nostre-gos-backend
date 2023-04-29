@@ -4,7 +4,6 @@ const { Usuario, Tiene, Rol } = require("../models");
 const isAdmin = async(req, res, next) => {
 
     try {
-        
         const user = await Usuario.findByPk(req.userId,{
             attributes:{
                 exclude:['nombre', 'apellido', 'telefono', 'email', 'contraseña', 'createdAt', 'updatedAt']

@@ -74,7 +74,7 @@ usuarioController.getPrivileges = async (req, res) => {
         );
     }
 };
-usuarioController.getAllAsAdmin= async (req, res) => {
+usuarioController.getAllAsAdmin = async (req, res) => {
     try {
         let usuarios= await Usuario.findAll({ attributes:{ exclude:[ 'id', 'contraseña' ]}});
         return res.json(
@@ -89,6 +89,40 @@ usuarioController.getAllAsAdmin= async (req, res) => {
             {
                 success: false,
                 message: "Something went wrong retrieving users",
+                error: error.message
+            }
+        );
+    }
+}
+usuarioController.getUser = async (req, res) => {
+    try {
+        const user= await Usuario.findByPk( parseInt(req.params.id), {
+            attributes:{
+                exclude:['id', 'contraseña', 'createdAt', 'updatedAt']
+            }
+        });
+        if(!user) {
+            return res.status(500).json(
+                {
+                    success: false,
+                    message: "Something went wrong retrieving User with id: " + req.params.id,
+                    error: "user doesn't exists"
+                }
+            );
+        }
+        return res.json(
+            {
+                success: true,
+                message: "User succesfully retrieved",
+                data: user
+            }
+        )
+        
+    } catch (error) {
+        return res.status(500).json(
+            {
+                success: false,
+                message: "Something went wrong retrieving User",
                 error: error.message
             }
         );
@@ -122,6 +156,9 @@ usuarioController.updateMe = async (req, res) => {
             }
         );
     }
+}
+usuarioController.putPrivilege = async (req, res) => {
+
 }
 
 module.exports = usuarioController;
