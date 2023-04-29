@@ -101,6 +101,14 @@ usuarioController.getUser = async (req, res) => {
                 exclude:['id', 'contraseña', 'createdAt', 'updatedAt']
             }
         });
+        const userRoles= await Tiene.findAll({
+            where:{
+                usuario_id: parseInt(req.params.id)
+            }
+        });
+        const roles= await Rol.findAll();
+        let _roles= [];
+        for (let rol of roles) _roles[rol.id]= rol.rol;
         if(!user) {
             return res.status(500).json(
                 {
@@ -110,11 +118,23 @@ usuarioController.getUser = async (req, res) => {
                 }
             );
         }
+        let _user= {
+            nombre: user.nombre,
+            apellido: user.apellido,
+            email: user.email,
+            telefono: user.telefono,
+            roles: []
+        };
+        for (let rol of userRoles){ 
+            for (let _rol of _roles) {
+                if(rol.rol_id === _roles.indexOf(_rol)) _user.roles.push(_rol);
+            }
+        }
         return res.json(
             {
                 success: true,
                 message: "User succesfully retrieved",
-                data: user
+                data: _user
             }
         )
         
@@ -158,7 +178,51 @@ usuarioController.updateMe = async (req, res) => {
     }
 }
 usuarioController.putPrivilege = async (req, res) => {
-
+    try {
+        const idTarget= parseInt( req.body.id );
+        const privilegesTarget= req.body.add;
+        let finalPrivileges = [...privilegesTarget];
+        const userPrivileges= await Tiene.findAll({
+            where: {
+                usuario_id: idTarget
+            }
+        });
+        const roles= await Rol.findAll();
+        // obtengo todos los roles por orden (su posicion en el array es la misma que su id)
+        let _roles= [];
+        for (let rol of roles) _roles[rol.id]= rol.rol
+        // compruebo si los privilegios introducidos ya estan añadidos para no repetir campos
+        for ( let privilege of privilegesTarget ){
+            for ( let _privilege of userPrivileges ){
+                console.log( privilege + " " + _roles[ _privilege.rol_id ])
+                if ( privilege === _roles[ _privilege.rol_id ]) {
+                    let index = finalPrivileges.indexOf(privilege);
+                    finalPrivileges.splice(index, 1);
+                }
+            }
+        }
+        // // creo los privilegios indicados
+        for ( let privilege of finalPrivileges ){
+            Tiene.create({
+                rol_id: _roles.indexOf(privilege),
+                usuario_id: idTarget
+            })
+        }
+        return res.json(
+            {
+                success: true,
+                message: "User with id: " + idTarget + " now have new privileges",
+                data: finalPrivileges
+            });
+    } catch (error) {
+        return res.status(500).json(
+            {
+                success: false,
+                message: "Something went wrong updating privileges",
+                error: error.message
+            }
+        );
+    }
 }
 
 module.exports = usuarioController;

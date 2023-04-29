@@ -13,7 +13,7 @@ router.get("/:id", isUsuario, isAdmin, usuarioController.getUser);
 //CREATE
 //UPDATE
 router.post("/yo", isUsuario, verifyUserChanges, usuarioController.updateMe);
-router.post("/privilegiosup", isAdmin, usuarioController.putPrivilege);
+router.post("/privilegiosup", isUsuario, isAdmin, usuarioController.putPrivilege);
 //DELETE
 
 /* router.get("/", verifyToken, isDoctor, userController.getAllUsersAsDoctor);
