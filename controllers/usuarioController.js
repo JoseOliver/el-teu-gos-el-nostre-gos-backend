@@ -194,7 +194,6 @@ usuarioController.putPrivilege = async (req, res) => {
         // compruebo si los privilegios introducidos ya estan añadidos para no repetir campos
         for ( let privilege of privilegesTarget ){
             for ( let _privilege of userPrivileges ){
-                console.log( privilege + " " + _roles[ _privilege.rol_id ])
                 if ( privilege === _roles[ _privilege.rol_id ]) {
                     let index = finalPrivileges.indexOf(privilege);
                     finalPrivileges.splice(index, 1);
@@ -212,6 +211,60 @@ usuarioController.putPrivilege = async (req, res) => {
             {
                 success: true,
                 message: "User with id: " + idTarget + " now have new privileges",
+                data: finalPrivileges
+            });
+    } catch (error) {
+        return res.status(500).json(
+            {
+                success: false,
+                message: "Something went wrong updating privileges",
+                error: error.message
+            }
+        );
+    }
+}
+usuarioController.removePrivilege = async (req, res) => {
+    try {
+        const idTarget= parseInt( req.body.id );
+        const privilegesTarget= req.body.remove;
+        let finalPrivileges = [...privilegesTarget];
+        const userPrivileges= await Tiene.findAll({
+            where: {
+                usuario_id: idTarget
+            }
+        });
+        const roles= await Rol.findAll();
+        // obtengo todos los roles por orden (su posicion en el array es la misma que su id)
+        let _roles= [];
+        for (let rol of roles) _roles[rol.id]= rol.rol
+        // compruebo si los privilegios introducidos existen para poder eliminarlos
+        let remove= false;
+        for ( let privilege of privilegesTarget ){
+            remove= true;
+            for ( let _privilege of userPrivileges ){
+                if ( privilege === _roles[ _privilege.rol_id ]) {
+                    remove= false;
+                }
+            }
+            if ( remove ) {
+                let index = finalPrivileges.indexOf(privilege);
+                finalPrivileges.splice(index, 1);
+            }
+        }
+        // elimino los privilegios indicados
+        let _userPrivileges = [...userPrivileges];
+        for ( let privilege of finalPrivileges ){
+            for ( let _privilege of userPrivileges ){
+                if ( privilege === _roles[ _privilege.rol_id ]) {
+                    let index = _userPrivileges.indexOf(_privilege);
+                    _userPrivileges[index].destroy();
+                }
+            }
+        }
+        return res.json(
+            {
+                success: true,
+                message: "User with id: " + idTarget + " now don't have new privileges",
                 data: finalPrivileges
             });
     } catch (error) {

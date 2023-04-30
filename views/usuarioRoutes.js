@@ -14,6 +14,7 @@ router.get("/:id", isUsuario, isAdmin, usuarioController.getUser);
 //UPDATE
 router.post("/yo", isUsuario, verifyUserChanges, usuarioController.updateMe);
 router.post("/privilegiosup", isUsuario, isAdmin, usuarioController.putPrivilege);
+router.post("/privilegiosdown", isUsuario, isAdmin, usuarioController.removePrivilege);
 //DELETE
 
 /* router.get("/", verifyToken, isDoctor, userController.getAllUsersAsDoctor);
