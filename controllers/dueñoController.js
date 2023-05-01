@@ -1,4 +1,4 @@
-const { Usuario, Tiene, Rol, Perro } = require("../models");
+const { Usuario, Tiene, Rol, Perro, Estancia } = require("../models");
 const dueñoController = {};
 
 dueñoController.newPerro = async (req, res) => {
@@ -28,7 +28,7 @@ dueñoController.newPerro = async (req, res) => {
     } catch (error) {
         return res.status(500).json({
             success: false,
-            message: "Somenthing went wrong with Register",
+            message: "Somenthing went wrong with perro register",
             error: error.message
         });
     }
@@ -71,7 +71,7 @@ dueñoController.getMyPerro = async (req, res) => {
                 exclude: [
                     "id", "revisado", "precio_dia", "dueño_id", "createdAt", "updatedAt"
                 ]
-            }})
+            }});
         if(perroNum +1 > perros.length){
             return res.status(500).json({
                 success: false,
@@ -108,6 +108,59 @@ dueñoController.updatePerro = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Somenthing went wrong updating your perro",
+            error: error.message
+        });
+    }
+}
+dueñoController.newEstancia = async (req, res) => {
+    try {
+        let dueñoId= parseInt( req.userId )
+        console.log(dueñoId)
+        let perroNum = parseInt(req.body.perro_id -1);
+        let perros= await Perro.findAll({where: {dueño_id : dueñoId}});
+        if(perroNum > perros.length -1){
+            return res.status(500).json({
+                success: false,
+                message: "you only have " + perros.length + " perros",
+                error: perroNum
+            });
+        }
+        let perro= perros[perroNum];
+        let cuidadorId = parseInt(req.body.cuidador_id);
+        const cuidador = await Usuario.findByPk(cuidadorId);
+        if (!cuidador){
+            return res.status(500).json({
+                success: false,
+                message: "Cuidador with id: "+cuidadorId+" doesn't exist. You must enter a valid Cuidador id",
+                error: cuidadorId
+            });
+        }
+        let newEstancia = await Estancia.create(
+        {
+            inicio: req.body.inicio,
+            fin: req.body.fin,
+            verificada: false,
+            finalizada: false,
+            perro_id: perro.id,
+            cuidador_id: cuidador.id
+        });
+        let sentEstancia= {
+            inicio: newEstancia.inicio,
+            fin: newEstancia.fin,
+            perro: perro.nombre,
+            verificada: false,
+            cuidador: cuidador.nombre
+        };
+        return res.json(
+            {
+                success: true,
+                message: "Register estancia from "+ perro.nombre +" was succesful",
+                data: sentEstancia
+            });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Somenthing went wrong with estancia register",
             error: error.message
         });
     }

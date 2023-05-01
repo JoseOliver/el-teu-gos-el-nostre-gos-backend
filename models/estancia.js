@@ -5,10 +5,14 @@ module.exports = (sequelize, DataTypes) => {
     class Estancia extends Model {
         static associate(models) {
             Estancia.belongsTo(
-                models.Perro
+                models.Perro, {
+                    foreignKey: 'perro_id'
+                }
             ),
             Estancia.belongsTo(
-                models.Usuario
+                models.Usuario, {
+                    foreignKey: 'cuidador_id'
+                }
             )
         }
     }
