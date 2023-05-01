@@ -1,7 +1,7 @@
 const usuarioController = require('../controllers/usuarioController');
 const { Usuario, Tiene, Rol } = require("../models");
 
-const isAdmin = async(req, res, next) => {
+const isDueño = async(req, res, next) => {
 
     try {
         const user = await Usuario.findByPk(req.userId,{
@@ -32,15 +32,15 @@ const isAdmin = async(req, res, next) => {
                 if( rol.id === _rol.rol_id ) rolesUsuario.push(rol.rol);
             }
         }
-        let admin= false;
+        let dueño= false;
         for ( let rol of rolesUsuario ){
-            if ( rol === 'admin' ) admin= true;
+            if ( rol === 'dueño' ) dueño= true;
         }
-        if(!admin) return res.status(403).send('You are not admin. you are not allowed.');
+        if(!dueño) return res.status(403).send('You are not dueño. you are not allowed.');
         next();
     }catch(error){
         return res.status(500).send(error.message);
     }
 }
 
-module.exports = isAdmin;
+module.exports = isDueño;
