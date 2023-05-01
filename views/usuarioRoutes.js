@@ -5,12 +5,12 @@ const isAdmin = require('../middlewares/isAdmin');
 const verifyUserChanges = require('../middlewares/verifyUserChanges');
 
 //Endpoints CRUD
-//GET
+//CREATE
+//RETRIEVE
 router.get("/yo", isUsuario, usuarioController.getMe);
 router.get("/yo/privilegios", isUsuario, usuarioController.getPrivileges);
 router.get("/todos", isUsuario, isAdmin, usuarioController.getAllAsAdmin);
 router.get("/:id", isUsuario, isAdmin, usuarioController.getUser);
-//CREATE
 //UPDATE
 router.post("/yo", isUsuario, verifyUserChanges, usuarioController.updateMe);
 router.post("/privilegiosup", isUsuario, isAdmin, usuarioController.putPrivilege);

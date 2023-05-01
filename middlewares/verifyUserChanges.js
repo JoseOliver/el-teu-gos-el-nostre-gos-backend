@@ -9,7 +9,11 @@ const verifyUserChanges = async(req, res, next) => {
             let changesExists = true;
             let wrongAttribute;
             for( let i in changes){
-                if(!user._isAttribute(i)){
+                if(!user._isAttribute(i) ||
+                    i === "id" ||
+                    i === "createdAt" ||
+                    i === "updatedAt"
+                ){
                     changesExists=false;
                     wrongAttribute=i;
                     break;

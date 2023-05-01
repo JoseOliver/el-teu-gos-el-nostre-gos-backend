@@ -93,5 +93,24 @@ dueñoController.getMyPerro = async (req, res) => {
         });
     }
 }
+dueñoController.updatePerro = async (req, res) => {
+    try {
+        let perro= req.Perro;
+        let changes= req.body.changes;
+        perro.update(changes);
+        return res.json(
+            {
+                success: true,
+                message: "Successfuly updated your perro "+ perro.nombre,
+                data: perro
+            });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Somenthing went wrong updating your perro",
+            error: error.message
+        });
+    }
+}
 
 module.exports = dueñoController;
