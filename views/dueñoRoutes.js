@@ -9,6 +9,7 @@ router.post('/estancia', isUsuario, isDueño, dueñoController.newEstancia);
 //retrieve
 router.get('/perros', isUsuario, isDueño, dueñoController.getMyPerros);
 router.get('/perro/:id', isUsuario, isDueño, dueñoController.getMyPerro);
+router.get('/estancias', isUsuario, isDueño, dueñoController.getMyEstancias);
 //update
 router.put('/perro', isUsuario, isDueño, verifyPerroChanges, dueñoController.updatePerro)
 module.exports = router;

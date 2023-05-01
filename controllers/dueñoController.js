@@ -156,11 +156,57 @@ dueñoController.newEstancia = async (req, res) => {
                 success: true,
                 message: "Register estancia from "+ perro.nombre +" was succesful",
                 data: sentEstancia
-            });
+            }
+        );
     } catch (error) {
         return res.status(500).json({
             success: false,
             message: "Somenthing went wrong with estancia register",
+            error: error.message
+        });
+    }
+}
+dueñoController.getMyEstancias = async (req, res) => {
+    try {
+        let dueñoId= parseInt(req.userId);
+        let perros= await Perro.findAll({where:{dueño_id : dueñoId}});
+        let estancias = {}
+        for ( let perro in perros ) {
+            estancias[perro]= await Estancia.findAll({ 
+                where:{perro_id : perros[perro].id},
+                attributes: {exclude : ["id", "createdAt", "updatedAt"]}
+            });
+        }
+        console.log(estancias)
+        let sentEstancias = {};
+        for (let perro in estancias){
+            for (let estancia in estancias[perro]){
+                let cuidador;
+                cuidador = await Usuario.findByPk(estancias[perro][estancia].cuidador_id);
+                if (sentEstancias[perro] === undefined){
+                    sentEstancias[perro]=[];
+                };
+                sentEstancias[perro][estancia]= {
+                    inicio: estancias[perro][estancia].inicio,
+                    fin: estancias[perro][estancia].fin,
+                    verificada: estancias[perro][estancia].verificada,
+                    finalizada: estancias[perro][estancia].finalizada,
+                    perro: perros[perro].nombre,
+                    cuidador: cuidador.nombre
+                };
+            }
+        }
+        return res.json(
+            {
+                success: true,
+                message: "Estancias successfuly retrieved",
+                data: sentEstancias
+            }
+        );
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Somenthing went wrong retrieving your estancias",
             error: error.message
         });
     }
