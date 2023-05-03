@@ -42,14 +42,29 @@ dueñoController.getMyPerros = async (req, res) => {
         },
         attributes:{ 
             exclude: [
-                "id", "revisado", "precio_dia", "dueño_id", "createdAt", "updatedAt"
+                "revisado", "precio_dia", "dueño_id", "createdAt", "updatedAt"
             ]
-        }})
+        }});
+        let dueño = await Usuario.findByPk(dueñoId);
+        let sentPerro = [];
+        for( let perro in perros ){
+            sentPerro[perro]= {
+                id: perros[perro].id,
+                num: parseInt(perro) +1,
+                nombre: perros[perro].nombre,
+                fecha_nacimiento: perros[perro].fecha_nacimiento,
+                anotaciones: perros[perro].anotaciones,
+                dueño:{
+                    id: dueño.id,
+                    nombre: dueño.nombre
+                }
+            };
+        }
         return res.json(
             {
                 success: true,
                 message: "Successfuly retrieved your perros",
-                data: perros
+                data: sentPerro
             });
     } catch (error) {
         return res.status(500).json({
@@ -62,14 +77,22 @@ dueñoController.getMyPerros = async (req, res) => {
 dueñoController.getMyPerro = async (req, res) => {
     try {
         let perroNum= parseInt(req.params.id) -1;
+        if (perroNum === -1){
+            return res.status(500).json({
+                success: false,
+                message: "Perro 0 doesn't exist, try counting from 1",
+                error: perroNum
+            });
+        }
         let dueñoId= parseInt(req.userId);
+        let dueño = await Usuario.findByPk(dueñoId);
         let perros = await Perro.findAll({ 
             where: {
                 dueño_id : dueñoId
             },
             attributes:{ 
                 exclude: [
-                    "id", "revisado", "precio_dia", "dueño_id", "createdAt", "updatedAt"
+                    "revisado", "precio_dia", "dueño_id", "createdAt", "updatedAt"
                 ]
             }});
         if(perroNum +1 > perros.length){
@@ -79,11 +102,22 @@ dueñoController.getMyPerro = async (req, res) => {
                 error: perroNum
             });
         }
+        let sentPerro= {
+            id: perros[perroNum].id,
+            num: parseInt(perroNum) +1,
+            nombre: perros[perroNum].nombre,
+            fecha_nacimiento: perros[perroNum].fecha_nacimiento,
+            anotaciones: perros[perroNum].anotaciones,
+            dueño:{
+                id: dueño.id,
+                nombre: dueño.nombre
+            }
+        };
         return res.json(
             {
                 success: true,
                 message: "Successfuly retrieved your perro "+ perros[perroNum].nombre,
-                data: perros[perroNum]
+                data: sentPerro
             });
     } catch (error) {
         return res.status(500).json({
@@ -98,11 +132,23 @@ dueñoController.updatePerro = async (req, res) => {
         let perro= req.Perro;
         let changes= req.body.changes;
         perro.update(changes);
+        let dueño = await Usuario.findByPk(perro.dueño_id);
+        let sentPerro = {
+            id: perro.id,
+            num: req.body.id,
+            nombre: perro.nombre,
+            fecha_nacimiento: perro.fecha_nacimiento,
+            anotaciones: perro.anotaciones,
+            dueño:{
+                id: perro.dueño_id,
+                nombre: dueño.nombre
+            }
+        }
         return res.json(
             {
                 success: true,
                 message: "Successfuly updated your perro "+ perro.nombre,
-                data: perro
+                data: sentPerro
             });
     } catch (error) {
         return res.status(500).json({
@@ -174,10 +220,9 @@ dueñoController.getMyEstancias = async (req, res) => {
         for ( let perro in perros ) {
             estancias[perro]= await Estancia.findAll({ 
                 where:{perro_id : perros[perro].id},
-                attributes: {exclude : ["id", "createdAt", "updatedAt"]}
+                attributes: {exclude : ["createdAt", "updatedAt"]}
             });
         }
-        console.log(estancias)
         let sentEstancias = {};
         for (let perro in estancias){
             for (let estancia in estancias[perro]){
@@ -187,12 +232,20 @@ dueñoController.getMyEstancias = async (req, res) => {
                     sentEstancias[perro]=[];
                 };
                 sentEstancias[perro][estancia]= {
+                    id: estancias[perro][estancia].id,
                     inicio: estancias[perro][estancia].inicio,
                     fin: estancias[perro][estancia].fin,
                     verificada: estancias[perro][estancia].verificada,
                     finalizada: estancias[perro][estancia].finalizada,
-                    perro: perros[perro].nombre,
-                    cuidador: cuidador.nombre
+                    perro: {
+                        id: perros[perro].id,
+                        num: perro +1,
+                        nombre: perros[perro].nombre
+                    },
+                    cuidador: {
+                        id: cuidador.id,
+                        nombre: cuidador.nombre
+                    }
                 };
             }
         }
@@ -207,6 +260,64 @@ dueñoController.getMyEstancias = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Somenthing went wrong retrieving your estancias",
+            error: error.message
+        });
+    }
+}
+dueñoController.updateMyEstancia = async (req, res) => {
+    try {
+        let dueñoId = parseInt(req.userId);
+        let perroNum = parseInt(req.body.perro_id) -1;
+        if (perroNum === -1){
+            return res.status(500).json({
+                success: false,
+                message: "Perro 0 doesn't exist, try counting from 1",
+                error: perroNum
+            });
+        }
+        let perros= await Perro.findAll({where:{ dueño_id: dueñoId }});
+        let perro= perros[perroNum];
+        let estancia= req.Estancia;
+        let cuidador= await Usuario.findByPk(estancia.cuidador_id);
+        if(estancia.perro_id !== perro.id){
+            return res.status(500).json({
+                success: false,
+                message: "El perro seleccionado no forma parte de la estancia seleccionada"
+            });
+        }
+        if(estancia.cuidador_id !== req.body.cuidador_id){
+            return res.status(500).json({
+                success: false,
+                message: "El cuidador seleccionado no forma parte de la estancia seleccionada"
+            });
+        }
+        let changes= req.body.changes;
+        estancia.update(changes);
+        let sentEstancia= {
+            id: estancia.id,
+            inicio: estancia.inicio,
+            fin: estancia.fin,
+            verificada: estancia.verificada,
+            finalizada: estancia.finalizada,
+            perro: {
+                id: perro.id,
+                num: req.body.perro_id,
+                nombre: perro.nombre
+            },
+            cuidador: {
+                id: req.body.cuidador_id,
+                nombre: cuidador.nombre
+            }
+        };
+        return res.json({
+            success: true,
+            message: "Successfuly updated your estancia",
+            data: sentEstancia
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Somenthing went wrong updating your estancia",
             error: error.message
         });
     }

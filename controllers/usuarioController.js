@@ -7,7 +7,7 @@ usuarioController.getMe = async (req, res) => {
     try {
         const user = await Usuario.findByPk(req.userId,{
             attributes:{
-                exclude:['id', 'contraseña', 'createdAt', 'updatedAt']
+                exclude:['contraseña', 'createdAt', 'updatedAt']
             }
         });
         return res.json(
@@ -76,7 +76,7 @@ usuarioController.getPrivileges = async (req, res) => {
 };
 usuarioController.getAllAsAdmin = async (req, res) => {
     try {
-        let usuarios= await Usuario.findAll({ attributes:{ exclude:[ 'id', 'contraseña' ]}});
+        let usuarios= await Usuario.findAll({ attributes:{ exclude:[ 'contraseña' ]}});
         return res.json(
             {
                 success: true,
@@ -98,7 +98,7 @@ usuarioController.getUser = async (req, res) => {
     try {
         const user= await Usuario.findByPk( parseInt(req.params.id), {
             attributes:{
-                exclude:['id', 'contraseña', 'createdAt', 'updatedAt']
+                exclude:['contraseña']
             }
         });
         const userRoles= await Tiene.findAll({
@@ -119,11 +119,14 @@ usuarioController.getUser = async (req, res) => {
             );
         }
         let _user= {
+            id: user.id,
             nombre: user.nombre,
             apellido: user.apellido,
             email: user.email,
             telefono: user.telefono,
-            roles: []
+            roles: [],
+            creado: user.createdAt,
+            actualizado: user.updatedAt
         };
         for (let rol of userRoles){ 
             for (let _rol of _roles) {
