@@ -5,6 +5,13 @@ const verifyPerroChanges = async(req, res, next) => {
     try {
         const dueñoId= req.userId;
         const perroNum= req.body.id -1;
+        if (perroNum === -1){
+            return res.status(500).json({
+                success: false,
+                message: "Perro with id 0 doesn't exists, maybe you want perro with id 1?",
+                error: perroNum
+            });
+        }
         const perros = await Perro.findAll({
             where:{
                 dueño_id : dueñoId
@@ -17,8 +24,8 @@ const verifyPerroChanges = async(req, res, next) => {
                 error: perroNum
             });
         }
-        let perro = perros[perroNum];
-        const changes= req.body.changes;
+        let changes= req.body.changes || req.body.props;
+        let perro = perros[perroNum] || Perro.build(changes);
         if(changes){
             let changesExists = true;
             let wrongAttribute;
@@ -38,6 +45,7 @@ const verifyPerroChanges = async(req, res, next) => {
             }
             if(changesExists){
                 req.Perro=perro;
+                console.log(perro)
                 next();
             }else{
                 return res.status(500).send("wrong attribute sent "+ wrongAttribute + ", must be replaced by correct attribute");

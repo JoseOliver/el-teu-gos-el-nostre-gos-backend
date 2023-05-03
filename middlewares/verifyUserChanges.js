@@ -4,7 +4,7 @@ const verifyUserChanges = async(req, res, next) => {
 
     try {
         const user = await Usuario.findByPk(req.userId);
-        const changes= req.body.changes;
+        const changes= req.body.changes || req.body.props;
         if(changes){
             let changesExists = true;
             let wrongAttribute;

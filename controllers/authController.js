@@ -6,7 +6,7 @@ const authController = {};
 
 authController.register = async (req, res) => {
     try {
-        const {nombre, apellido, telefono, email, contraseña} = req.body;
+        const {nombre, apellido, telefono, email, contraseña} = req.body.props;
         const encryptedPassword = bcrypt.hashSync(contraseña, 10);
         const existentEmail = await Usuario.findOne({
             where: { email: email },

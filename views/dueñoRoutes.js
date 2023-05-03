@@ -5,8 +5,8 @@ const verifyEstanciaChanges = require('../middlewares/verifyEstanciaChanges');
 const verifyPerroChanges = require('../middlewares/verifyPerroChanges');
 const router = require('express').Router();
 //create
-router.post('/perro', isUsuario, isDueño, dueñoController.newPerro);
-router.post('/estancia', isUsuario, isDueño, dueñoController.newEstancia);
+router.post('/perro', isUsuario, isDueño, verifyPerroChanges, dueñoController.newPerro);
+router.post('/estancia', isUsuario, isDueño, verifyEstanciaChanges, dueñoController.newEstancia);
 //retrieve
 router.get('/perros', isUsuario, isDueño, dueñoController.getMyPerros);
 router.get('/perro/:id', isUsuario, isDueño, dueñoController.getMyPerro);

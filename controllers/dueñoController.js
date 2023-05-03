@@ -4,25 +4,19 @@ const dueñoController = {};
 dueñoController.newPerro = async (req, res) => {
     try {
         let dueñoId= parseInt(req.userId);
-        let newPerro= await Perro.create(
-            {
-            nombre: req.body.nombre,
-            fecha_nacimiento: req.body.fecha_nacimiento,
-            anotaciones: req.body.anotaciones,
-            revisado: false,
-            precio_dia: 15,
-            dueño_id: dueñoId
-            }
-        );
+        let props= req.body.props;
+        props.dueño_id= dueñoId;
+        let newPerro= await Perro.create(props);
+        newPerro
         let sentPerro = {
-            nombre: req.body.nombre,
-            fecha_nacimiento: req.body.fecha_nacimiento,
-            anotaciones: req.body.anotaciones
+            nombre: req.body.props.nombre,
+            fecha_nacimiento: req.body.props.fecha_nacimiento,
+            anotaciones: req.body.props.anotaciones
         }
         return res.json(
             {
                 success: true,
-                message: "Register "+ newPerro.nombre +" was succesful",
+                message: "Register "+ sentPerro.nombre +" was succesful",
                 data: sentPerro
             });
     } catch (error) {
@@ -160,10 +154,18 @@ dueñoController.updatePerro = async (req, res) => {
 }
 dueñoController.newEstancia = async (req, res) => {
     try {
+        console.log("llega")
         let dueñoId= parseInt( req.userId )
-        console.log(dueñoId)
-        let perroNum = parseInt(req.body.perro_id -1);
+        let props= req.body.props;
+        let perroNum = parseInt(props.perro_id -1);
         let perros= await Perro.findAll({where: {dueño_id : dueñoId}});
+        if (perroNum === -1){
+            return res.status(500).json({
+                success: false,
+                message: "Perro 0 doesn't exist, try counting from 1",
+                error: perroNum
+            });
+        }
         if(perroNum > perros.length -1){
             return res.status(500).json({
                 success: false,
@@ -172,24 +174,33 @@ dueñoController.newEstancia = async (req, res) => {
             });
         }
         let perro= perros[perroNum];
-        let cuidadorId = parseInt(req.body.cuidador_id);
+        let cuidadorId = parseInt(props.cuidador_id);
         const cuidador = await Usuario.findByPk(cuidadorId);
-        if (!cuidador){
+        let isCuidador = false;
+        const rolesCuidadorId = await Tiene.findAll({where: {usuario_id: cuidadorId}});
+        let rolesCuidador=[];
+        const allRoles= await Rol.findAll();
+        for (let rol of allRoles){
+            for (let _rol of rolesCuidadorId){
+                if( rol.id === _rol.rol_id ) rolesCuidador.push(rol.rol);
+            }
+        }
+        for( let rol of rolesCuidador ){
+            if( rol === "cuidador") isCuidador = true;
+        }
+
+        if (!isCuidador){
             return res.status(500).json({
                 success: false,
                 message: "Cuidador with id: "+cuidadorId+" doesn't exist. You must enter a valid Cuidador id",
                 error: cuidadorId
             });
         }
-        let newEstancia = await Estancia.create(
-        {
-            inicio: req.body.inicio,
-            fin: req.body.fin,
-            verificada: false,
-            finalizada: false,
-            perro_id: perro.id,
-            cuidador_id: cuidador.id
-        });
+        props.perro_id= perro.id;
+        props.verificada= false;
+        props.finalizada= false;
+        props.cuidador_id= cuidador.id;
+        let newEstancia = await Estancia.create(props);
         let sentEstancia= {
             inicio: newEstancia.inicio,
             fin: newEstancia.fin,
@@ -239,7 +250,7 @@ dueñoController.getMyEstancias = async (req, res) => {
                     finalizada: estancias[perro][estancia].finalizada,
                     perro: {
                         id: perros[perro].id,
-                        num: perro +1,
+                        num: parseInt(perro) +1,
                         nombre: perros[perro].nombre
                     },
                     cuidador: {
@@ -277,7 +288,13 @@ dueñoController.updateMyEstancia = async (req, res) => {
         }
         let perros= await Perro.findAll({where:{ dueño_id: dueñoId }});
         let perro= perros[perroNum];
-        let estancia= req.Estancia;
+        let estancia= await Estancia.findByPk(req.EstanciaId);
+        if(!estancia){
+            return res.status(500).json({
+                success: false,
+                message: "la estancia seleccionada no existe"
+            });
+        }
         let cuidador= await Usuario.findByPk(estancia.cuidador_id);
         if(estancia.perro_id !== perro.id){
             return res.status(500).json({
