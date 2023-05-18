@@ -1,4 +1,5 @@
 const { Usuario, Tiene, Rol } = require("../models");
+const bcrypt = require('bcrypt');
 const usuarioController = {};
 
 //CRUD
@@ -154,7 +155,8 @@ usuarioController.getUser = async (req, res) => {
 //update
 usuarioController.updateMe = async (req, res) => {
     try {
-        const changes= req.body.changes;
+        let changes= req.body.changes;
+        if(changes.contraseña)changes.contraseña= bcrypt.hashSync(changes.contraseña, 10);
         req.User.update(changes);
         req.User.save();
         let sentUser = {
