@@ -339,5 +339,30 @@ dueñoController.updateMyEstancia = async (req, res) => {
         });
     }
 }
-
+dueñoController.getCuidadores = async (req, res) => {
+    try {
+        const roles= await Rol.findAll();
+        let rolCuidador; 
+        for(let rol of roles){
+            if(rol.rol === 'cuidador')rolCuidador= rol
+        }
+        const cuidadores= await Tiene.findAll({where:{rol_id:rolCuidador.id}})
+        let usuariosCuidadores = [];
+        for(let cuidador of cuidadores){
+            let usuario = await Usuario.findByPk(cuidador.usuario_id, {attributes: {exclude : ["createdAt", "updatedAt", "contraseña"]}});
+            usuariosCuidadores.push( usuario );
+        }
+        return res.status(200).json({
+            success: true,
+            message: "All cuidadores retrieved",
+            data: usuariosCuidadores
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Somenthing went wrong getting cuidadores",
+            error: error.message
+        });
+    }
+}
 module.exports = dueñoController;

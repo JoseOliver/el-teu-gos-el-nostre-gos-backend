@@ -11,6 +11,7 @@ router.post('/estancia', isUsuario, isDueño, verifyEstanciaChanges, dueñoContr
 router.get('/perros', isUsuario, isDueño, dueñoController.getMyPerros);
 router.get('/perro/:id', isUsuario, isDueño, dueñoController.getMyPerro);
 router.get('/estancias', isUsuario, isDueño, dueñoController.getMyEstancias);
+router.get('/cuidadores', isUsuario, isDueño, dueñoController.getCuidadores);
 //update
 router.put('/perro', isUsuario, isDueño, verifyPerroChanges, dueñoController.updatePerro);
 router.put('/estancia', isUsuario, isDueño, verifyEstanciaChanges, dueñoController.updateMyEstancia);
