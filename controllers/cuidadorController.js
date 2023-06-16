@@ -101,7 +101,7 @@ cuidadorController.getMyPerro = async (req, res) => {
         console.log(estanciasPerro.length)
         if  (estanciasPerro.length===0) return res.status(400).json({
             success: false,
-            message: "You're not the cuidador of this perro, or this perro doesn't exist",
+            message: "You're not cuidador of this perro, or maybe this perro doesn't exist",
         });
         let perro = await Perro.findByPk(perroId, {attributes:{exclude: ['createdAt','updatedAt']}});
         let dueñoId = perro.dueño_id;
@@ -135,10 +135,74 @@ cuidadorController.getMyPerro = async (req, res) => {
     }
 }
 cuidadorController.verificarEstancia = async (req, res) => {
+    try {
+        let estanciaId = req.params.id;
+        let estancia = await Estancia.findByPk(estanciaId, {attributes:{exclude: ['createdAt']}});
+        if (!estancia) return res.status(400).json({
+            success: false,
+            message: "this estancia is not yours, or maybe it doesn't exist",
+        });
+        if(estancia.verificada) estancia.update({verificada:false});
+        else estancia.update({verificada:true});
+        return res.status(200).json({
+            success: true,
+            message: "Estancia successfuly verified",
+            data: estancia
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Somenthing went wrong verifying your estancia",
+            error: error.message
+        });
+    }
 }
 cuidadorController.verificarPerro = async (req, res) => {
+    try {
+        let perroId = req.params.id;
+        let perro = await Perro.findByPk(perroId, {attributes:{exclude: ['createdAt']}});
+        if (!perro) return res.status(400).json({
+            success: false,
+            message: "You're not cuidador of this perro, or maybe this perro doesn't exist",
+        });
+        if( perro.revisado ) perro.update({revisado:false});
+        else perro.update({revisado:true});
+
+        return res.status(200).json({
+            success: true,
+            message: "Perro successfuly verified",
+            data: perro
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Somenthing went wrong verifying your perro",
+            error: error.message
+        });
+    }
 }
 cuidadorController.cambiarPrecioDiaPerro = async (req, res) => {
+    try {
+        let perroId = req.params.id;
+        let precio_dia = req.body.precio_dia;
+        let perro = await Perro.findByPk(perroId, {attributes:{exclude: ['createdAt']}});
+        if(!perro) return res.status(400).json({
+            success: false,
+            message: "You're not cuidador of this perro, or maybe this perro doesn't exist",
+        });
+        perro.update({precio_dia: precio_dia});
+        return res.status(200).json({
+            success: true,
+            message: "Perro successfuly updated",
+            data: perro
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Somenthing went wrong updating your perro",
+            error: error.message
+        });
+    }
 }
 
 
