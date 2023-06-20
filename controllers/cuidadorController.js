@@ -165,8 +165,17 @@ cuidadorController.verificarPerro = async (req, res) => {
             success: false,
             message: "You're not cuidador of this perro, or maybe this perro doesn't exist",
         });
-        if( perro.revisado ) perro.update({revisado:false});
-        else perro.update({revisado:true});
+        if( perro.revisado ) {
+            let estanciasDelPerro = Estancia.findAll({where:{perro_id:perro.id, verificada:false}});
+            if(estanciasDelPerro.length === 0) perro.update({revisado:false});
+            else return res.status(500).json({
+                success: false,
+                message: "This perro can't change revisado value, it has any active estancia. You must set thats estancia(s) to unverified to change this value",
+            });
+        }
+        else {
+            perro.update({revisado:true});
+        }
 
         return res.status(200).json({
             success: true,
